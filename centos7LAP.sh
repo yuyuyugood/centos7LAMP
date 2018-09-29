@@ -25,3 +25,22 @@ cd pdo_sqlsrv-5.3.0
 make && make install
 sed -i '$a extension=pdo_sqlsrv.so' /etc/php.d/pdo.ini
 service httpd restart
+echo "pdo_sqlsrv.so installed"
+cd /usr/local/src
+if [ ! -f "libevent-2.1.8-stable.tar.gz" ];then
+wget -c https://github.com/libevent/libevent/releases/download/release-2.1.8-stable/libevent-2.1.8-stable.tar.gz
+fi
+tar -zxvf libevent-2.1.8-stable.tar.gz && cd libevent-2.1.8-stable
+./configure --prefix=/usr/local/libevent-2.1.8
+make && make install
+cd /usr/local/src
+if [ ! -f "event-2.3.0.tgz" ];then
+wget -c http://pecl.php.net/get/event-2.3.0.tgz
+fi
+tar -zxvf event-2.3.0.tgz && cd event-2.3.0
+phpize
+./configure --with-php-config=/usr/bin/php-config --with-event-libevent-dir=/usr/local/libevent-2.1.8/
+make && make install
+sed -i '$a extension=event.so' /etc/php.d/sockets.ini
+echo "event installed"
+service httpd restart
